@@ -27,18 +27,6 @@ export class App extends Component {
             images: [...prevState.images, ...res.data.hits],
             lastPage: page < Math.ceil(res.data.totalHits / 12),
           }));
-
-          // if (page !== prevState.page) {
-          //   this.setState(prevState => ({
-          //     images: [...prevState.images, ...res.data.hits],
-          //     lastPage: page < Math.ceil(res.data.totalHits / 12),
-          //   }));
-          // } else if (query !== prevState.query) {
-          //   this.setState({
-          //     images: res.data.hits,
-          //     lastPage: page < Math.ceil(res.data.totalHits / 12),
-          //   });
-          // }
         })
         .catch(console.log)
         .finally(() => this.setState({ isLoading: false }));
@@ -86,19 +74,6 @@ export class App extends Component {
       </>
     );
   }
-
-  // <div
-  //   style={{
-  //     height: '100vh',
-  //     display: 'flex',
-  //     justifyContent: 'center',
-  //     alignItems: 'center',
-  //     fontSize: 40,
-  //     color: '#010101',
-  //   }}
-  // >
-  //   React template
-  // </div>
 }
 
 export default App;
