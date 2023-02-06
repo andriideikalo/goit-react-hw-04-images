@@ -26,12 +26,10 @@ export default function App() {
         setLastPage(Math.ceil(res.data.totalHits / 12));
       })
       .catch(console.log)
-      .finally(toggleIsLoading);
+      .finally(() => setIsLoading(prevState => !prevState));
   }, [page, query]);
 
   const onSearchSubmit = query => {
-    if (setQuery !== query) return;
-
     setQuery(query);
     setPage(1);
     setImages([]);
@@ -40,15 +38,16 @@ export default function App() {
     setIsLoading(true);
   };
 
-  const onLoadMore = () => {
-    setLastPage(prev => ({ page: prev.page + 1, isLoading: true }));
+  const onLoadMore = e => {
+    e.preventDefault();
+    setPage(prev => prev + 1);
   };
-  const toggleIsLoading = () => {
-    setIsLoading(prevState => ({ isLoading: !prevState.isLoading }));
-  };
+  // const toggleIsLoading = () => {
+  //   setIsLoading(prevState => ({ isLoading: !prevState.isLoading }));
+  // };
 
   const onImageClick = largeImage =>
-    setModalImage({ showModal: true, modalImage: largeImage });
+    setImages({ showModal: true, modalImage: largeImage });
 
   const onCloseModal = () => setModalImage(true);
 
@@ -61,7 +60,7 @@ export default function App() {
       {showModal && (
         <Modal image={modalImage} onCloseModal={onCloseModal}></Modal>
       )}
-      {setIsLoading && <Loader />}
+      {isLoading && <Loader />}
       {lastPage && !isLoading && <Button onClick={onLoadMore} />}
     </>
   );
