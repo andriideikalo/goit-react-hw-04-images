@@ -17,19 +17,20 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (setQuery !== query || setPage !== page) {
-      fetchImges(query, page)
-        .then(res => {
-          setImages(prevState => [...prevState, ...res.data.hits]);
-          setLastPage(Math.ceil(res.data.totalHits / 12));
-        })
-        .catch(console.log)
-        .finally(toggleIsLoading);
+    if (query === '') {
+      return;
     }
+    fetchImges(query, page)
+      .then(res => {
+        setImages(prevState => [...prevState, ...res.data.hits]);
+        setLastPage(Math.ceil(res.data.totalHits / 12));
+      })
+      .catch(console.log)
+      .finally(toggleIsLoading);
   }, [page, query]);
 
   const onSearchSubmit = query => {
-    if (query === setQuery) return;
+    if (setQuery !== query) return;
 
     setQuery(query);
     setPage(1);
@@ -40,27 +41,27 @@ export default function App() {
   };
 
   const onLoadMore = () => {
-    this.setState(prev => ({ page: prev.page + 1, isLoading: true }));
+    setLastPage(prev => ({ page: prev.page + 1, isLoading: true }));
   };
   const toggleIsLoading = () => {
     setIsLoading(prevState => ({ isLoading: !prevState.isLoading }));
   };
 
   const onImageClick = largeImage =>
-    this.setState({ showModal: true, modalImage: largeImage });
+    setModalImage({ showModal: true, modalImage: largeImage });
 
-  const onCloseModal = () => setModalImage({ showModal: false });
+  const onCloseModal = () => setModalImage(true);
 
   return (
     <>
       <Searchbar onSubmit={onSearchSubmit} />
       {images.length > 0 && (
-        <ImageGallery images={images} onImageClick={onImageClick} />
+        <ImageGallery images={images} onClick={onImageClick} />
       )}
       {showModal && (
         <Modal image={modalImage} onCloseModal={onCloseModal}></Modal>
       )}
-      {isLoading && <Loader />}
+      {setIsLoading && <Loader />}
       {lastPage && !isLoading && <Button onClick={onLoadMore} />}
     </>
   );
