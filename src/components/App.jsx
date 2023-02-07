@@ -1,5 +1,5 @@
-// import React, { Component } from 'react';
-import { useState, useEffect } from 'react';
+import React, { Component } from 'react';
+// import api from './API/API';
 import { fetchImges } from './API/API';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
@@ -7,61 +7,98 @@ import Loader from './Loader/Loader';
 import Button from './Button/Button';
 import Modal from './Modal/Modal';
 
-export default function App() {
-  const [images, setImages] = useState([]);
-  const [modalImage, setModalImage] = useState(null);
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(false);
-  const [lastPage, setLastPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+export class App extends Component {
+  state = {
+    images: [],
+    modalImage: null,
+    query: '',
+    page: 1,
+    lastPage: false,
+    showModal: false,
+    isLoading: false,
+  };
 
-  useEffect(() => {
-    if (query === '') {
-      return;
+  componentDidUpdate(prevProps, prevState) {
+    const { page, query } = this.state;
+    if (prevState.query !== query || prevState.page !== page) {
+      fetchImges(query, page)
+        .then(res => {
+          this.setState(prevState => ({
+            images: [...prevState.images, ...res.data.hits],
+            lastPage: page < Math.ceil(res.data.totalHits / 12),
+          }));
+
+          // if (page !== prevState.page) {
+          //   this.setState(prevState => ({
+          //     images: [...prevState.images, ...res.data.hits],
+          //     lastPage: page < Math.ceil(res.data.totalHits / 12),
+          //   }));
+          // } else if (query !== prevState.query) {
+          //   this.setState({
+          //     images: res.data.hits,
+          //     lastPage: page < Math.ceil(res.data.totalHits / 12),
+          //   });
+          // }
+        })
+        .catch(console.log)
+        .finally(() => this.setState({ isLoading: false }));
     }
-    fetchImges(query, page)
-      .then(res => {
-        setImages(prevState => [...prevState, ...res.data.hits]);
-        setLastPage(Math.ceil(res.data.totalHits / 12));
-      })
-      .catch(console.log)
-      .finally(() => setIsLoading(prevState => !prevState));
-  }, [page, query]);
+  }
 
-  const onSearchSubmit = query => {
-    setQuery(query);
-    setPage(1);
-    setImages([]);
-    setLastPage(false);
-    setShowModal(false);
-    setIsLoading(true);
+  onSearchSubmit = query => {
+    if (query === this.state.query) return;
+
+    this.setState({
+      query: query,
+      page: 1,
+      images: [],
+      lastPage: false,
+      showModal: false,
+      isLoading: true,
+    });
   };
 
-  const onLoadMore = e => {
-    e.preventDefault();
-    setPage(prev => prev + 1);
+  onLoadMore = () => {
+    this.setState(prev => ({ page: prev.page + 1, isLoading: true }));
   };
-  // const toggleIsLoading = () => {
-  //   setIsLoading(prevState => ({ isLoading: !prevState.isLoading }));
-  // };
+  toggleIsLoading = () => {
+    this.setState(prevState => ({ isLoading: !prevState.isLoading }));
+  };
 
-  const onImageClick = largeImage =>
-    setImages({ showModal: true, modalImage: largeImage });
+  onImageClick = largeImage =>
+    this.setState({ showModal: true, modalImage: largeImage });
 
-  const onCloseModal = () => setModalImage(true);
+  onCloseModal = () => this.setState({ showModal: false });
 
-  return (
-    <>
-      <Searchbar onSubmit={onSearchSubmit} />
-      {images.length > 0 && (
-        <ImageGallery images={images} onClick={onImageClick} />
-      )}
-      {showModal && (
-        <Modal image={modalImage} onCloseModal={onCloseModal}></Modal>
-      )}
-      {isLoading && <Loader />}
-      {lastPage && !isLoading && <Button onClick={onLoadMore} />}
-    </>
-  );
+  render() {
+    const { isLoading, showModal, images, modalImage, lastPage } = this.state;
+    return (
+      <>
+        <Searchbar onSubmit={this.onSearchSubmit} />
+        {images.length > 0 && (
+          <ImageGallery images={images} onImageClick={this.onImageClick} />
+        )}
+        {showModal && (
+          <Modal image={modalImage} onCloseModal={this.onCloseModal}></Modal>
+        )}
+        {isLoading && <Loader />}
+        {lastPage && !isLoading && <Button onClick={this.onLoadMore} />}
+      </>
+    );
+  }
+
+  // <div
+  //   style={{
+  //     height: '100vh',
+  //     display: 'flex',
+  //     justifyContent: 'center',
+  //     alignItems: 'center',
+  //     fontSize: 40,
+  //     color: '#010101',
+  //   }}
+  // >
+  //   React template
+  // </div>
 }
+
+export default App;
