@@ -16,21 +16,19 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (setQuery !== query || setPage !== page) {
-      fetchImges(query, page)
-        .then(res => {
-          query(prevState => ({
-            images: [...prevState.images, ...res.data.hits],
-            lastPage: page < Math.ceil(res.data.totalHits / 12),
-          }));
-        })
-        .catch(console.log)
-        .finally(() => this.setState({ isLoading: false }));
-    }
+    fetchImges(query, page)
+      .then(res => {
+        this.setState(prevState => ({
+          images: [...prevState.images, ...res.data.hits],
+          lastPage: page < Math.ceil(res.data.totalHits / 12),
+        }));
+      })
+      .catch(console.log)
+      .finally(() => this.setState({ isLoading: false }));
   }, [page, query]);
 
   const onSearchSubmit = query => {
-    if (query === this.state.query) return;
+    if (query === setQuery) return;
 
     setQuery(query);
     setPage(1);
