@@ -28,24 +28,7 @@ export default function App() {
       .finally(() => setIsLoading(false));
   }, [query, page]);
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   const { page, query } = this.state;
-  //   if (prevState.query !== query || prevState.page !== page) {
-  //     fetchImges(query, page)
-  //       .then(res => {
-  //         this.setState(prevState => ({
-  //           images: [...prevState.images, ...res.data.hits],
-  //           lastPage: page < Math.ceil(res.data.totalHits / 12),
-  //         }));
-  //       })
-  //       .catch(console.log)
-  //       .finally(() => this.setState({ isLoading: false }));
-  //   }
-  // }
-
   const onSearchSubmit = query => {
-    // if (query === setQuery) return;
-
     setQuery(query);
     setPage(1);
     setImages([]);
@@ -55,24 +38,17 @@ export default function App() {
   };
 
   const onLoadMore = () => {
-    // this.setState(prev => ({ page: prev.page + 1, isLoading: true }));
-    setPage(prev => prev.page + 1);
+    setPage(prev => prev + 1);
     setIsLoading(true);
   };
 
-  const onImageClick = largeImage =>
-    // this.setState({ showModal: true, modalImage: largeImage });
-    {
-      setShowModal(true);
-      setModalImage(largeImage);
-    };
+  const onImageClick = largeImage => {
+    setShowModal(true);
+    setModalImage(largeImage);
+  };
 
-  const onCloseModal = () =>
-    // this.setState({ showModal: false })
-    setShowModal(false);
+  const onCloseModal = () => setShowModal(false);
 
-  // render() {
-  // const { isLoading, showModal, images, modalImage, lastPage } = this.state;
   return (
     <>
       <Searchbar onSubmit={onSearchSubmit} />
@@ -86,7 +62,4 @@ export default function App() {
       {lastPage && !isLoading && <Button onClick={onLoadMore} />}
     </>
   );
-  // }
 }
-
-// export default App;
