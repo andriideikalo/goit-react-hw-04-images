@@ -19,6 +19,7 @@ export default function App() {
     if (query === '') {
       return;
     }
+    setIsLoading(true);
     fetchImges(query, page)
       .then(res => {
         setImages(prevState => [...prevState, ...res.data.hits]);
