@@ -7,9 +7,7 @@ const modalRoot = document.querySelector('#modal-root');
 
 // export default class Modal extends Component {
 export default function Modal({ onCloseModal, image }) {
-  // componentDidMount() {
-  //   window.addEventListener('keydown', this.onEscClick);
-  // }
+
 
   useEffect(() => {
     const onEscClick = e => {
@@ -17,15 +15,11 @@ export default function Modal({ onCloseModal, image }) {
       onCloseModal();
     };
     window.addEventListener('keydown', onEscClick);
+    
+    return () =>  window.removeEventListener('keydown', onEscClick);
   }, [onCloseModal]);
 
-  // componentWillUnmount() {
-  //   window.removeEventListener('keydown', this.onEscClick);
-  // }
-
-  // useEffect(() => {
-  //   window.removeEventListener('keydown', onEscClick);
-  // });
+  
 
   const onBackdropClick = e => {
     if (e.target !== e.currentTarget) return;
@@ -33,8 +27,7 @@ export default function Modal({ onCloseModal, image }) {
     onCloseModal();
   };
 
-  // render() {
-  // const { image } = this.props;
+
   return createPortal(
     <Overlay onClick={onBackdropClick}>
       <ModalContent>
