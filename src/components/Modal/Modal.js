@@ -12,22 +12,20 @@ export default function Modal({ onCloseModal, image }) {
   // }
 
   useEffect(() => {
+    const onEscClick = e => {
+      if (!e.key === 'Escape') return;
+      onCloseModal();
+    };
     window.addEventListener('keydown', onEscClick);
-  });
+  }, [onCloseModal]);
 
   // componentWillUnmount() {
   //   window.removeEventListener('keydown', this.onEscClick);
   // }
 
-  useEffect(() => {
-    window.removeEventListener('keydown', onEscClick);
-  });
-
-  const onEscClick = e => {
-    if (!e.key === 'Escape') return;
-
-    onCloseModal();
-  };
+  // useEffect(() => {
+  //   window.removeEventListener('keydown', onEscClick);
+  // });
 
   const onBackdropClick = e => {
     if (e.target !== e.currentTarget) return;

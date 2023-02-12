@@ -40,7 +40,7 @@ export default function App() {
 
   const onLoadMore = () => {
     setPage(prev => prev + 1);
-    setIsLoading(true);
+    // setIsLoading(true);
   };
 
   const onImageClick = largeImage => {
